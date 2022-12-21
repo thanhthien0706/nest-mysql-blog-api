@@ -5,9 +5,11 @@ import { MysqlModule } from './database/mysql.module';
 import { UserModule } from './UserModule/user.module';
 import { RoleModule } from './RoleModule/role.module';
 import { DataSource } from 'typeorm';
+import { AuthModule } from './AuthModule/Auth.module';
+import { UtilsModule } from './UtilsModule/Utils.module';
 
 @Module({
-  imports: [MysqlModule, UserModule, RoleModule],
+  imports: [MysqlModule, UserModule, RoleModule, AuthModule, UtilsModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -5,4 +5,6 @@ export interface IRoleService {
   existRole(nameRole: string): Promise<boolean>;
 
   createRole(roleDto: RoleCreateDto): Promise<RoleEntity>;
+
+  findRoleByName(nameRole: string): Promise<RoleEntity>;
 }

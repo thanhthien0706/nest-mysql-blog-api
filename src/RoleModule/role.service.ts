@@ -30,4 +30,14 @@ export class RoleService implements IRoleService {
 
     return role;
   }
+
+  async findRoleByName(nameRole: string): Promise<RoleEntity> {
+    const role = await this.roleRepository.findOneBy({ name: nameRole });
+
+    if (!role) {
+      throw new ConflictException(`Role ${nameRole} not existed`);
+    }
+
+    return role;
+  }
 }
