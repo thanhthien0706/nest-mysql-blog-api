@@ -1,10 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { IAuthService } from './IAuth.service';
+import { IAuthService } from '../services/IAuth.service';
 import { UserEntity } from 'src/entity/user.entity';
-import { SignupDto } from './dto/Auth.dto';
-import { UserService } from 'src/UserModule/user.service';
+import { SignupDto } from '../dto/Auth.dto';
+import { UserService } from 'src/UserModule/services/user.service';
 import { CloudinaryService } from 'src/UtilsModule/Cloudinary.service';
-import { RoleService } from 'src/RoleModule/role.service';
+import { RoleService } from 'src/RoleModule/services/role.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -18,20 +18,30 @@ export class AuthService implements IAuthService {
     formSignup: SignupDto,
     avatarFile: Express.Multer.File,
   ): Promise<UserEntity> {
-    const checkEmail = await this.userService.checkUserExistByEmail(
-      formSignup.email,
-    );
+    const checkEmail = this.userService.checkUserExistByEmail(formSignup.email);
 
-    if (checkEmail) {
-      throw new ConflictException(`${formSignup.email} existed`);
-    }
-
-    const checkUserName = await this.userService.checkUserExistByUserName(
+    const checkUserName = this.userService.checkUserExistByUserName(
       formSignup.userName,
     );
 
-    if (checkUserName) {
+    const findRole = this.roleService.findRoleByName('ROLE_USER');
+
+    const [emailExist, userNameExist, roleData] = await Promise.all([
+      checkEmail,
+      checkUserName,
+      findRole,
+    ]);
+
+    if (emailExist) {
+      throw new ConflictException(`${formSignup.email} existed`);
+    }
+
+    if (userNameExist) {
       throw new ConflictException(`${formSignup.userName} existed`);
+    }
+
+    if (roleData) {
+      formSignup.roles.push(roleData);
     }
 
     const avatar = await this.cloudinaryService.uploadFileBuffer(
@@ -40,12 +50,6 @@ export class AuthService implements IAuthService {
 
     if (avatar) {
       formSignup.avatar = avatar.url;
-    }
-
-    const role = await this.roleService.findRoleByName('ROLE_USER');
-
-    if (role) {
-      formSignup.roles.push(role);
     }
 
     const user = await this.userService.createUser(formSignup);

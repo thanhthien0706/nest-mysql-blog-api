@@ -1,5 +1,5 @@
 import { UserEntity } from 'src/entity/user.entity';
-import { SignupDto } from './dto/Auth.dto';
+import { SignupDto } from '../dto/Auth.dto';
 
 export interface IAuthService {
   signup(

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common/decorators';
 import { IUserService } from './IUser.service';
-import { UserRepository } from './user.repository';
 import { SignupDto } from 'src/AuthModule/dto/Auth.dto';
 import { UserEntity } from 'src/entity/user.entity';
 import { ConflictException } from '@nestjs/common';
+import { UserRepository } from '../user.repository';
 
 @Injectable()
 export class UserService implements IUserService {
